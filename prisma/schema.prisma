@@ -1,0 +1,42 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  tags        String[] // e.g., ["100% Pure & Natural", "Stress Relaxation", "Promotes Better Sleep"]
+  images      String[] // Array of image URLs
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  volumes String[]
+  bundles String[]
+
+  @@map("products")
+}
+
+model ContactMessages {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  message     String
+  phoneNumber String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model UserReviews {
+  id              String @id @default(cuid())
+  review          String
+  userName        String
+  productImageUrl String
+}
