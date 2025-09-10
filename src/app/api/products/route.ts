@@ -1,5 +1,6 @@
 import prisma from "@/lib/prisma";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
+
 import { z } from "zod";
 
 const createProductSchema = z.object({
@@ -12,15 +13,15 @@ const createProductSchema = z.object({
   bundles: z.array(z.string()).optional(),
 });
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  if (req.method === "GET") {
-    const page = Number(req.query.page ?? 1);
-    const limit = Math.min(Number(req.query.limit ?? 12), 100);
-    const skip = (page - 1) * limit;
+// GET /api/products
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
 
+  const page = Number(searchParams.get("page") ?? 1);
+  const limit = Math.min(Number(searchParams.get("limit") ?? 12), 100);
+  const skip = (page - 1) * limit;
+
+  try {
     const [items, total] = await Promise.all([
       prisma.product.findMany({
         orderBy: { createdAt: "desc" },
@@ -30,18 +31,28 @@ export default async function handler(
       prisma.product.count(),
     ]);
 
-    return res.status(200).json({ items, total, page, limit });
+    return NextResponse.json({ items, total, page, limit });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
+}
 
-  if (req.method === "POST") {
-    try {
-      const parsed = createProductSchema.parse(req.body);
-      const created = await prisma.product.create({ data: parsed as any });
-      return res.status(201).json(created);
-    } catch (err: any) {
-      return res.status(400).json({ error: err.message });
-    }
+// POST /api/products
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const parsed = createProductSchema.parse(body);
+
+    const created = await prisma.product.create({
+      data: parsed as any,
+    });
+
+    return NextResponse.json(created, { status: 201 });
+  } catch (err: any) {
+    return NextResponse.json(
+      { error: err.message ?? "Bad Request" },
+      { status: 400 }
+    );
   }
-
-  res.status(405).end();
 }
