@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+"use client";
+import React, { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
@@ -7,131 +8,209 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import React from "react";
+import { Button } from "@/components/ui/button";
 
-export const ProductGridSection = () => {
-  const products = [
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  category: string;
+  date: string;
+  image: string;
+}
+
+interface GridProps {
+  filters: {
+    category: string;
+    priceRange: number[];
+    sort: string;
+    page: number;
+  };
+  setFilters: React.Dispatch<
+    React.SetStateAction<{
+      category: string;
+      priceRange: number[];
+      sort: string;
+      page: number;
+    }>
+  >;
+}
+
+export const ProductGridSection = ({ filters, setFilters }: GridProps) => {
+  const products: Product[] = [
     {
       id: 1,
       title: "Essential Oil",
-      price: "$ 15.99",
-      image: "/thumbnail.png",
+      price: 15.99,
+      category: "essential oils",
+      date: "2024-09-01",
+      image: "/product.png",
     },
     {
       id: 2,
-      title: "Essential Oil",
-      price: "$ 15.99",
-      image: "/thumbnail-1.png",
+      title: "Luxury Candle",
+      price: 25.99,
+      category: "candles",
+      date: "2024-08-15",
+      image: "/product.png",
     },
     {
       id: 3,
-      title: "Essential Oil",
-      price: "$ 15.99",
-      image: "/thumbnail-2.png",
+      title: "Face Cream",
+      price: 30.5,
+      category: "skincare",
+      date: "2024-07-10",
+      image: "/product.png",
     },
     {
       id: 4,
-      title: "Essential Oil",
-      price: "$ 15.99",
-      image: "/thumbnail-3.png",
+      title: "Lavender Oil",
+      price: 19.99,
+      category: "essential oils",
+      date: "2024-06-05",
+      image: "/product.png",
     },
     {
       id: 5,
-      title: "Essential Oil",
-      price: "$ 15.99",
-      image: "/thumbnail-4.png",
+      title: "Rose Candle",
+      price: 18.99,
+      category: "candles",
+      date: "2024-05-12",
+      image: "/product.png",
     },
     {
       id: 6,
       title: "Essential Oil",
-      price: "$ 15.99",
-      image: "/thumbnail-5.png",
+      price: 17.99,
+      category: "essential oils",
+      date: "2024-05-12",
+      image: "/product.png",
     },
     {
       id: 7,
       title: "Essential Oil",
-      price: "$ 15.99",
-      image: "/thumbnail-6.png",
+      price: 16.90,
+      category: "essential oils",
+      date: "2024-05-12",
+      image: "/product.png",
     },
     {
       id: 8,
       title: "Essential Oil",
-      price: "$ 15.99",
-      image: "/thumbnail-7.png",
+      price: 21.90,
+      category: "essential oils",
+      date: "2024-05-12",
+      image: "/product.png",
     },
     {
       id: 9,
       title: "Essential Oil",
-      price: "$ 15.99",
-      image: "/thumbnail-8.png",
+      price: 18.99,
+      category: "candles",
+      date: "2024-05-12",
+      image: "/product.png",
     },
   ];
 
-  const paginationItems = [
-    {
-      page: "1",
-      isActive: false,
-    },
-    {
-      page: "2",
-      isActive: false,
-    },
-    {
-      page: "3",
-      isActive: true,
-    },
-  ];
+  const itemsPerPage = 6;
+
+  const filteredProducts = useMemo(() => {
+    let data = [...products];
+    if (filters.category !== "all") {
+      data = data.filter((p) => p.category === filters.category);
+    }
+    data = data.filter((p) => p.price <= filters.priceRange[1]);
+
+    if (filters.sort === "price-asc")
+      data.sort((a, b) => a.price - b.price);
+    else if (filters.sort === "price-desc")
+      data.sort((a, b) => b.price - a.price);
+    else if (filters.sort === "date-asc")
+      data.sort(
+        (a, b) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+    else if (filters.sort === "date-desc")
+      data.sort(
+        (a, b) =>
+          new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+
+    return data;
+  }, [filters, products]);
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (filters.page - 1) * itemsPerPage,
+    filters.page * itemsPerPage
+  );
 
   return (
-    <div className="relative w-full px-5">
-      <div className="relative p-5">
-        <header className="flex justify-between items-center mb-12">
-          <h2 className="[font-family:'Poppins',Helvetica] font-normal text-[#231f20] text-xl tracking-[0] leading-[normal]">
-            24 Products
-          </h2>
+    <div className="relative w-full px-2 md:px-5">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+        <h2 className="font-medium text-lg text-gray-800">
+          {filteredProducts.length} Products
+        </h2>
 
-          <div className="relative">
-            <Select>
-              <SelectTrigger className="w-[241px] h-[50px]  border-[1px] border-black rounded-none">
-                <SelectValue
-                  placeholder="Sort"
-                  className="[font-family:'Poppins',Helvetica] font-normal text-black text-lg tracking-[0] leading-[normal]"
-                />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="price-low">Price: Low to High</SelectItem>
-                <SelectItem value="price-high">Price: High to Low</SelectItem>
-                <SelectItem value="name">Name</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </header>
+        <Select
+          value={filters.sort}
+          onValueChange={(val) =>
+            setFilters((prev) => ({ ...prev, sort: val }))
+          }
+        >
+          <SelectTrigger className="w-[200px] h-[40px] border border-black rounded-none">
+            <SelectValue placeholder="Sort" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="price-asc">Price: Low to High</SelectItem>
+            <SelectItem value="price-desc">Price: High to Low</SelectItem>
+            <SelectItem value="date-asc">Date: Oldest First</SelectItem>
+            <SelectItem value="date-desc">Date: Newest First</SelectItem>
+          </SelectContent>
+        </Select>
+      </header>
 
-        <div className="grid grid-cols-3 gap-4 mb-12">
-          {products.map((product) => (
-            <Card
-              key={product.id}
-              className="w-80 h-[530px] bg-transparent border-none shadow-none"
-            >
-              <CardContent className="p-0 relative">
-                <img
-                  className="w-80 h-[441px] object-cover"
-                  alt="Thumbnail"
-                  src={"product.png"}
-                />
-                <div className="text-center mt-[22px]">
-                  <h3 className="[font-family:'Poppins',Helvetica] font-medium text-[#1e1e20] text-2xl tracking-[0] leading-[normal] mb-[1px]">
-                    {product.title}
-                  </h3>
-                  <p className="[font-family:'Poppins',Helvetica] font-normal text-[#1e1e20] text-base tracking-[0] leading-[normal]">
-                    {product.price}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      {/* Product Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+        {paginatedProducts.map((product) => (
+          <Card
+            key={product.id}
+            className="w-full bg-transparent border-none shadow-none"
+          >
+            <CardContent className="p-0 relative">
+              <img
+                className="w-full h-[350px] object-cover"
+                alt={product.title}
+                src={product.image}
+              />
+              <div className="text-center mt-4">
+                <h3 className="font-semibold text-lg text-gray-900">
+                  {product.title}
+                </h3>
+                <p className="text-gray-600">${product.price.toFixed(2)}</p>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-center items-center gap-2 pb-8">
+        {Array.from({ length: totalPages }).map((_, i) => (
+          <Button
+            key={i}
+            variant="ghost"
+            onClick={() =>
+              setFilters((prev) => ({ ...prev, page: i + 1 }))
+            }
+            className={`w-[34px] h-[34px] p-0 rounded-none ${filters.page === i + 1
+              ? "bg-black text-white"
+              : "bg-transparent text-black"
+              }`}
+          >
+            {i + 1}
+          </Button>
+        ))}
       </div>
     </div>
   );

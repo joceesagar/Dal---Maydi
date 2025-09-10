@@ -8,7 +8,7 @@ import { ProductDescriptionSection } from "./landing-page/sections/product-descr
 
 const Landing = () => {
   return (
-    <div className="w-full min-h-screen flex flex-col overflow-scroll">
+    <div className="w-full min-h-screen flex flex-col">
       <HeroSection />
       <EssentialOilFactsSection />
       <ProductDescriptionSection />
