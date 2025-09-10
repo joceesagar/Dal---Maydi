@@ -28,20 +28,22 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} font-poppins antialiased`}>
-        <div className="w-full min-h-screen">
+        <div className="w-full min-h-screen overflow-x-hidden">
           {/* Header Section */}
-          <header className="w-full bg-[#feffef] border-b border-border py-6">
-            <div className="mx-auto sm:px-6 lg:px-32">
+          <header className="w-full bg-[#feffef] border-b border-border py-4 md:py-6">
+            <div className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-32">
               <div className="flex justify-between items-center">
                 {/* Logo */}
                 <div className="flex-shrink-0">
-                  <div className="font-semibold text-[#bc8217] text-[25.2px]">
+                  <div className="font-semibold text-[#bc8217] text-lg sm:text-xl md:text-[25.2px]">
                     Dal - Maydi
                   </div>
                 </div>
 
                 {/* Navigation */}
-                <Navigation />
+                <div className="hidden md:block">
+                  <Navigation />
+                </div>
 
                 {/* Cart Button */}
                 <CartLink />
@@ -49,7 +51,7 @@ export default function RootLayout({
             </div>
           </header>
 
-          <main>{children}</main>
+          <main className="overflow-x-hidden">{children}</main>
         </div>
         <SiteFooterSection />
       </body>

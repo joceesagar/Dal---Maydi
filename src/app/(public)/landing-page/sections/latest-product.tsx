@@ -101,28 +101,43 @@ export const LatestProductsSection = () => {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [productsPerView, setProductsPerView] = useState(3);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const router = useRouter()
+  const router = useRouter();
 
+  useEffect(() => {
+    const updateProductsPerView = () => {
+      if (window.innerWidth < 768) {
+        setProductsPerView(1);
+      } else if (window.innerWidth < 1024) {
+        setProductsPerView(2);
+      } else {
+        setProductsPerView(3);
+      }
+    };
 
-  const getProductsToShow = () => {
-    if (typeof window === 'undefined') return 3; // SSR fallback
-    if (window.innerWidth < 768) return 1;  // Mobile: 1 product
-    if (window.innerWidth < 1024) return 2; // Tablet: 2 products
-    return 3; // Desktop: 3 products
-  };
+    updateProductsPerView();
+    window.addEventListener('resize', updateProductsPerView);
+    return () => window.removeEventListener('resize', updateProductsPerView);
+  }, []);
 
-  const products = allProducts.slice(currentIndex, currentIndex + getProductsToShow());
+  const maxIndex = allProducts.length - productsPerView;
+  const products = allProducts.slice(currentIndex, currentIndex + productsPerView);
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % (allProducts.length - 2));
+    setCurrentIndex((prev) => (prev + 1) % (maxIndex + 1));
   };
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + (allProducts.length - 2)) % (allProducts.length - 2));
+    setCurrentIndex((prev) => (prev - 1 + (maxIndex + 1)) % (maxIndex + 1));
   };
 
-  // Auto-slide functionality
+  const goToSlide = (index: number) => {
+    setCurrentIndex(index * productsPerView);
+  };
+
+  const totalDots = Math.ceil(allProducts.length / productsPerView);
+
   useEffect(() => {
     if (!isHovered) {
       intervalRef.current = setInterval(() => {
@@ -139,51 +154,53 @@ export const LatestProductsSection = () => {
         clearInterval(intervalRef.current);
       }
     };
-  }, [isHovered]);
+  }, [isHovered, maxIndex]);
 
   return (
-    <section className="w-full relative px-32">
-      <div className="grid grid-cols-12 gap-8 items-start">
-        <div className="col-span-3 flex flex-col">
-          <div className="flex mb-20 mt-5 items-start justify-start gap-2 w-full">
-            {new Array(5).fill(0).map((_, index) => (
+    <section className="w-full relative px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32 py-8 md:py-16">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="lg:col-span-3 flex flex-col order-2 lg:order-1">
+          <div className="flex mb-8 md:mb-20 mt-0 md:mt-5 items-center justify-center lg:justify-start gap-2 w-full">
+            {new Array(totalDots).fill(0).map((_, index) => (
               <div
                 key={index}
-                className={`${index === Math.floor(currentIndex / 3)
-                  ? "size-3 rounded-full bg-transparent border-gray-400 border-2  flex items-center justify-center mt-0.5"
-                  : "size-3 rounded-full bg-gray-100  flex items-center justify-center mt-0.5"
+                className={`cursor-pointer ${index === Math.floor(currentIndex / productsPerView)
+                    ? "size-3 rounded-full bg-transparent border-gray-400 border-2 flex items-center justify-center mt-0.5"
+                    : "size-3 rounded-full bg-gray-100 flex items-center justify-center mt-0.5"
                   }`}
-                onClick={() => setCurrentIndex(index * 3)}
+                onClick={() => goToSlide(index)}
               ></div>
             ))}
           </div>
 
-          <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#183b56] text-5xl tracking-[0.20px] leading-[60px] mb-8">
+          <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#183b56] text-2xl md:text-3xl lg:text-4xl xl:text-5xl tracking-[0.20px] leading-tight md:leading-[60px] mb-6 md:mb-8 text-center lg:text-left">
             Our Latest
             <br />
             Products
           </h2>
 
-          <p className="[font-family:'Poppins',Helvetica] font-normal text-[#183b56] text-xl tracking-[0.20px] leading-6 mb-12 max-w-[292px]">
+          <p className="[font-family:'Poppins',Helvetica] font-normal text-[#183b56] text-base md:text-lg lg:text-xl tracking-[0.20px] leading-6 mb-8 md:mb-12 max-w-full lg:max-w-[292px] text-center lg:text-left">
             Wide range of organic products and all are handpicker and for you to
             see.
           </p>
 
-          <Button className="w-[167px] h-[55px] bg-[#b87f14] hover:bg-[#a06f12] rounded-lg cursor-pointer"
-            onClick={() => router.push('/products')}
-          >
-            <span className="[font-family:'Open_Sans',Helvetica] font-bold text-white text-lg">
-              View All
-            </span>
-          </Button>
+          <div className="flex justify-center lg:justify-start">
+            <Button
+              className="w-full sm:w-[167px] h-[55px] bg-[#b87f14] hover:bg-[#a06f12] rounded-lg cursor-pointer"
+              onClick={() => router.push('/products')}
+            >
+              <span className="[font-family:'Open_Sans',Helvetica] font-bold text-white text-lg">
+                View All
+              </span>
+            </Button>
+          </div>
         </div>
 
         <div
-          className="col-span-8 border-l-1 ps-4 border-border/45 h-full relative"
+          className="lg:col-span-8 xl:col-span-9 lg:border-l lg:border-border/45 lg:pl-4 xl:pl-8 h-full relative order-1 lg:order-2"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          {/* Left Arrow */}
           <button
             onClick={prevSlide}
             className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-300 cursor-pointer ${isHovered ? 'opacity-100' : 'opacity-0'
@@ -192,7 +209,6 @@ export const LatestProductsSection = () => {
             <ChevronLeft className="w-5 h-5 text-[#183b56]" />
           </button>
 
-          {/* Right Arrow */}
           <button
             onClick={nextSlide}
             className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-300 cursor-pointer ${isHovered ? 'opacity-100' : 'opacity-0'
@@ -201,7 +217,10 @@ export const LatestProductsSection = () => {
             <ChevronRight className="w-5 h-5 text-[#183b56]" />
           </button>
 
-          <div className="grid grid-cols-3 gap-6 transition-all duration-500">
+          <div className={`grid gap-4 md:gap-6 transition-all duration-500 ${productsPerView === 1 ? 'grid-cols-1' :
+              productsPerView === 2 ? 'grid-cols-2' :
+                'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+            }`}>
             {products.map((product) => (
               <Card
                 key={product.id}
@@ -210,16 +229,16 @@ export const LatestProductsSection = () => {
                 <CardContent className="p-0">
                   <div className="flex flex-col">
                     <img
-                      className="w-full h-[389px] object-cover mb-5"
+                      className="w-full h-[250px] md:h-[300px] lg:h-[389px] object-cover mb-4 md:mb-5"
                       alt="Image"
                       src={product.image}
                     />
 
-                    <h3 className=" font-normal text-[#183b56] text-xl tracking-[0.20px] leading-9 whitespace-nowrap">
+                    <h3 className="font-normal text-[#183b56] text-lg md:text-xl tracking-[0.20px] leading-9 truncate">
                       {product.name}
                     </h3>
 
-                    <p className="font-normal text-[#5a7184] text-md tracking-[0] leading-9 whitespace-nowrap">
+                    <p className="font-normal text-[#5a7184] text-sm md:text-base tracking-[0] leading-9 truncate">
                       {product.category}
                     </p>
                   </div>
@@ -228,8 +247,8 @@ export const LatestProductsSection = () => {
             ))}
           </div>
         </div>
-        <div className="w-full px-32 border-border/45 border-b h-4"></div>
       </div>
+      <div className="w-full border-border/45 border-b h-4 mt-8 md:mt-16"></div>
     </section>
   );
 };

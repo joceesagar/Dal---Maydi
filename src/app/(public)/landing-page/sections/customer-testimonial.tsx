@@ -53,7 +53,6 @@ export const CustomerTestimonialsSection = () => {
     setCurrentIndex(index);
   };
 
-
   useEffect(() => {
     if (!isHovered) {
       intervalRef.current = setInterval(() => {
@@ -80,7 +79,7 @@ export const CustomerTestimonialsSection = () => {
     <section className="w-full bg-[#f9fbfe] py-6">
       <Card className="max-w-7xl mx-auto bg-[#f9fbfe] border-none shadow-none">
         <CardContent
-          className="flex flex-col md:flex-row items-center gap-6 md:gap-8 p-4 md:p-8 relative"
+          className="flex flex-col lg:flex-row items-center gap-6 md:gap-8 p-4 md:p-8 relative"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
@@ -100,9 +99,9 @@ export const CustomerTestimonialsSection = () => {
             <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-[#183b56]" />
           </button>
 
-          <div className="flex-shrink-0">
+          <div className="flex-shrink-0 order-2 lg:order-1">
             <img
-              className="w-[250px] h-[230px] md:w-[341px] md:h-[317px] object-cover transition-all duration-700 ease-in-out"
+              className="w-[250px] h-[230px] sm:w-[300px] sm:h-[280px] md:w-[341px] md:h-[317px] object-cover transition-all duration-700 ease-in-out mx-auto"
               alt="Customer testimonial"
               src={currentTestimonial.image}
               onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -111,30 +110,30 @@ export const CustomerTestimonialsSection = () => {
             />
           </div>
 
-          <div className="flex-1 relative transition-all duration-700 ease-in-out">
+          <div className="flex-1 relative transition-all duration-700 ease-in-out order-1 lg:order-2 text-center lg:text-left">
             <img
-              className="w-[70px] md:w-[90px] absolute right-0 bottom-0 h-[70px] md:h-[90px] object-fill opacity-20"
+              className="w-[50px] md:w-[70px] lg:w-[90px] absolute right-0 lg:right-0 bottom-0 h-[50px] md:h-[70px] lg:h-[90px] object-fill opacity-20"
               alt="quote-img"
               src="/quote-left.png"
             />
 
             <blockquote className="mb-4 md:mb-6">
-              <p className="font-normal text-[#183b56] text-base md:text-lg tracking-[0.12px] leading-6 md:leading-8 transition-all duration-700 ease-in-out">
+              <p className="font-normal text-[#183b56] text-sm sm:text-base md:text-lg tracking-[0.12px] leading-6 md:leading-8 transition-all duration-700 ease-in-out">
                 "{currentTestimonial.quote}"
               </p>
             </blockquote>
 
-            <cite className="font-semibold text-[#183b56] text-lg md:text-xl tracking-[0.20px] leading-6 not-italic transition-all duration-700 ease-in-out">
+            <cite className="font-semibold text-[#183b56] text-base md:text-lg lg:text-xl tracking-[0.20px] leading-6 not-italic transition-all duration-700 ease-in-out">
               -{currentTestimonial.author}
             </cite>
 
-            <div className="mt-4 flex gap-2 justify-center md:justify-start">
+            <div className="mt-4 flex gap-2 justify-center lg:justify-start">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
                   className={`${index === currentIndex
-                    ? "size-3 rounded-full bg-transparent border-gray-400 border-2 flex items-center justify-center mt-0.5 transition-all duration-300"
-                    : "size-3 rounded-full bg-gray-200 flex items-center justify-center mt-0.5 hover:bg-gray-300 transition-all duration-300"
+                      ? "size-3 rounded-full bg-transparent border-gray-400 border-2 flex items-center justify-center mt-0.5 transition-all duration-300"
+                      : "size-3 rounded-full bg-gray-200 flex items-center justify-center mt-0.5 hover:bg-gray-300 transition-all duration-300"
                     }`}
                   onClick={() => goToSlide(index)}
                   aria-label={`Go to testimonial ${index + 1}`}

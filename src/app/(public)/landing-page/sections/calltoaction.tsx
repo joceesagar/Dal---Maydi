@@ -37,15 +37,15 @@ export const FAQSection = () => {
   };
 
   return (
-    <section className="w-full px-8 py-16 bg-white">
+    <section className="w-full px-4 sm:px-6 md:px-8 py-12 md:py-16 bg-white">
       <div className="max-w-7xl mx-auto">
-        <div className="grid lg:grid-cols-5 gap-12 items-start">
+        <div className="grid lg:grid-cols-5 gap-8 md:gap-12 items-start">
           {/* Header Section */}
-          <div className="lg:col-span-2">
-            <h2 className="font-semibold text-black text-5xl leading-tight mb-6 font-['Poppins']">
+          <div className="lg:col-span-2 text-center lg:text-left">
+            <h2 className="font-semibold text-black text-3xl md:text-4xl lg:text-5xl leading-tight mb-4 md:mb-6 font-['Poppins']">
               FAQs
             </h2>
-            <p className="font-normal text-[#183b56] text-2xl leading-relaxed font-['Poppins']">
+            <p className="font-normal text-[#183b56] text-lg md:text-xl lg:text-2xl leading-relaxed font-['Poppins']">
               Everything You Need to Know About Our Essential Oils
             </p>
           </div>
@@ -55,31 +55,29 @@ export const FAQSection = () => {
               {faqData.map((faq) => (
                 <div
                   key={faq.id}
-                  className="border-2 min-w-2xl border-gray-200 rounded-xl overflow-hidden transition-all duration-200 hover:border-gray-300"
+                  className="border-2 border-gray-200 rounded-xl overflow-hidden transition-all duration-200 hover:border-gray-300"
                 >
                   <button
                     onClick={() => toggleItem(faq.id)}
-                    className="w-full px-8 py-6 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-200"
+                    className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-200"
                   >
-                    <span className="font-normal text-black text-xl leading-normal font-['Poppins'] pr-4">
+                    <span className="font-normal text-black text-base md:text-lg lg:text-xl leading-normal font-['Poppins'] pr-4">
                       {faq.question}
                     </span>
                     <ChevronDown
-                      className={`w-6 h-6 text-gray-600 flex-shrink-0 transition-transform duration-200 ${
-                        openItem === faq.id ? "rotate-180" : ""
-                      }`}
+                      className={`w-5 h-5 md:w-6 md:h-6 text-gray-600 flex-shrink-0 transition-transform duration-200 ${openItem === faq.id ? "rotate-180" : ""
+                        }`}
                     />
                   </button>
 
                   <div
-                    className={`overflow-hidden transition-all duration-300 ${
-                      openItem === faq.id
+                    className={`overflow-hidden transition-all duration-300 ${openItem === faq.id
                         ? "max-h-96 opacity-100"
                         : "max-h-0 opacity-0"
-                    }`}
+                      }`}
                   >
-                    <div className="px-8 pb-6 pt-2 bg-gray-50">
-                      <p className="font-light text-[#606060] text-base leading-relaxed">
+                    <div className="px-4 md:px-8 pb-4 md:pb-6 pt-2 bg-gray-50">
+                      <p className="font-light text-[#606060] text-sm md:text-base leading-relaxed">
                         {faq.answer}
                       </p>
                     </div>

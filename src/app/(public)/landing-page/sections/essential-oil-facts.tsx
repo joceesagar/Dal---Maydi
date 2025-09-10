@@ -66,57 +66,52 @@ export const EssentialOilFactsSection = () => {
       title: "Lavender Oil",
       description:
         "Known for its calming aroma, it helps reduce stress, promote relaxation, and improve sleep quality.",
-      iconClasses:
-        "relative w-8 h-8 top-[17px] left-[17px] bg-[#36b37e] rounded-full",
     },
     {
       title: "Lemon Oil",
       description:
         "A refreshing oil that uplifts mood, boosts energy, and purifies the air with its citrusy scent.",
-      iconClasses: "w-14 h-14",
     },
     {
       title: "Peppermint Oil",
       description:
         "Revitalizing and cooling, perfect for easing headaches, improving focus, and soothing sore muscles.",
-      iconClasses: "w-14 h-14",
     },
     {
       title: "Tea Tree Oil",
       description:
         "A natural cleanser with antibacterial properties, ideal for skin care and supporting overall immunity.",
-      iconClasses: "w-16 h-[62px]",
     },
   ];
 
   return (
-    <section className="w-full h-[60vh] mb-32  py-16 bg-white px-10">
-      <div className=" mx-auto px-4">
-        <h2 className="font-semibold text-[#183b56] text-[40px] text-center tracking-[0.20px] leading-[52px] mb-4">
+    <section className="w-full min-h-[60vh] mb-16 md:mb-32 py-8 md:py-16 bg-white px-4 sm:px-6 md:px-8 lg:px-10">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="font-semibold text-[#183b56] text-2xl md:text-3xl lg:text-[40px] text-center tracking-[0.20px] leading-tight md:leading-[52px] mb-4">
           Our Essential Oil Facts
         </h2>
 
-        <p className="max-w-[790px] mx-auto [font-family:'Poppins',Helvetica] font-normal text-[#5a7184] text-lg text-center tracking-[0] leading-8 mb-16">
+        <p className="max-w-[790px] mx-auto [font-family:'Poppins',Helvetica] font-normal text-[#5a7184] text-base md:text-lg text-center tracking-[0] leading-6 md:leading-8 mb-12 md:mb-16">
           Rooted in nature&apos;s purity and inspired by holistic wellness, our
           essential oils are carefully sourced and distilled to preserve their
           natural benefits. Each ingredient is chosen for its therapeutic
           properties, ensuring a pure and authentic experience.
         </p>
 
-        <div className="flex flex-wrap justify-center gap-12 md:gap-8 lg:gap-22">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12 lg:gap-8 xl:gap-22 justify-items-center">
           {essentialOils.map((oil, index) => (
             <Card
               key={index}
-              className="border-none shadow-none bg-transparent "
+              className="border-none shadow-none bg-transparent w-full max-w-[250px]"
             >
               <CardContent className="flex flex-col items-center text-center p-0">
-                <div className="mb-8 flex justify-center">
+                <div className="mb-6 md:mb-8 flex justify-center">
                   <OilIconShape index={index} />
                 </div>
-                <h3 className=" font-medium text-[#183b56] text-xl text-center tracking-[0.20px] leading-6 mb-4">
+                <h3 className="font-medium text-[#183b56] text-lg md:text-xl text-center tracking-[0.20px] leading-6 mb-3 md:mb-4">
                   {oil.title}
                 </h3>
-                <p className=" font-normal w-[150px] text-[#5a7184] text-sm text-center tracking-[0] leading-6">
+                <p className="font-normal text-[#5a7184] text-sm text-center tracking-[0] leading-6 px-2">
                   {oil.description}
                 </p>
               </CardContent>
