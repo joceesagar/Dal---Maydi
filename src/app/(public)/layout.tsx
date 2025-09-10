@@ -6,6 +6,7 @@ import { Navigation } from "@/components/navigation";
 import { Button } from "@/components/ui/button";
 import { ShoppingCartIcon } from "lucide-react";
 import { SiteFooterSection } from "./landing-page/sections/site-footer";
+import { CartLink } from "./products/sections/cart-items";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -43,12 +44,7 @@ export default function RootLayout({
                 <Navigation />
 
                 {/* Cart Button */}
-                <Button className="bg-[#bb8116] hover:bg-[#a0701a] rounded-[21.88px] h-11">
-                  <ShoppingCartIcon className="w-5 h-5 mr-2" />
-                  <span className="font-medium text-white text-sm">
-                    $25.53 (2)
-                  </span>
-                </Button>
+                <CartLink />
               </div>
             </div>
           </header>
