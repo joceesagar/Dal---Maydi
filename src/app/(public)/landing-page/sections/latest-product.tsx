@@ -1,4 +1,5 @@
 "use client";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Package } from "lucide-react";
@@ -18,6 +19,41 @@ interface Product {
   createdAt: string;
   updatedAt: string;
 }
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut" as any
+    }
+  }
+};
+
+const productVariants = {
+  hidden: { opacity: 0, scale: 0.9 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut" as any
+    }
+  }
+};
 
 export const LatestProductsSection = () => {
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -130,20 +166,30 @@ export const LatestProductsSection = () => {
 
   if (loading) {
     return (
-      <section className="w-full relative px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32 py-8 md:py-16">
+      <motion.section
+        className="w-full relative px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32 py-8 md:py-16"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
         <div className="flex items-center justify-center h-96">
           <div className="flex flex-col items-center gap-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#b87f14]"></div>
             <p className="text-[#183b56] text-lg">Loading latest products...</p>
           </div>
         </div>
-      </section>
+      </motion.section>
     );
   }
 
   if (error || allProducts.length === 0) {
     return (
-      <section className="w-full relative px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32 py-8 md:py-16">
+      <motion.section
+        className="w-full relative px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32 py-8 md:py-16"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-3 flex flex-col order-2 lg:order-1">
             <h2 className="[font-family:'Poppins',Helvetica] font-semibold text-[#183b56] text-2xl md:text-3xl lg:text-4xl xl:text-5xl tracking-[0.20px] leading-tight md:leading-[60px] mb-6 md:mb-8 text-center lg:text-left">
@@ -177,14 +223,23 @@ export const LatestProductsSection = () => {
           </div>
         </div>
         <div className="w-full border-border/45 border-b h-4 mt-8 md:mt-16"></div>
-      </section>
+      </motion.section>
     );
   }
 
   return (
-    <section className="w-full relative px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32 py-8 md:py-16">
+    <motion.section
+      className="w-full relative px-4 sm:px-6 md:px-8 lg:px-16 xl:px-32 py-8 md:py-16"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={containerVariants}
+    >
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <div className="lg:col-span-3 flex flex-col order-2 lg:order-1">
+        <motion.div
+          className="lg:col-span-3 flex flex-col order-2 lg:order-1"
+          variants={itemVariants}
+        >
           {totalDots > 1 && (
             <div className="flex mb-8 md:mb-20 mt-0 md:mt-5 items-center justify-center lg:justify-start gap-2 w-full">
               {new Array(totalDots).fill(0).map((_, index) => (
@@ -220,32 +275,37 @@ export const LatestProductsSection = () => {
               </span>
             </Button>
           </div>
-        </div>
+        </motion.div>
 
-        <div
+        <motion.div
           className="lg:col-span-8 xl:col-span-9 lg:border-l lg:border-border/45 lg:pl-4 xl:pl-8 h-full relative order-1 lg:order-2"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          variants={itemVariants}
         >
           {allProducts.length > productsPerView && (
             <>
-              <button
+              <motion.button
                 onClick={prevSlide}
                 className={`absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-300 cursor-pointer ${isHovered ? 'opacity-100' : 'opacity-0'
                   }`}
                 aria-label="Previous products"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <ChevronLeft className="w-5 h-5 text-[#183b56]" />
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
                 onClick={nextSlide}
                 className={`absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-2 transition-all duration-300 cursor-pointer ${isHovered ? 'opacity-100' : 'opacity-0'
                   }`}
                 aria-label="Next products"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
               >
                 <ChevronRight className="w-5 h-5 text-[#183b56]" />
-              </button>
+              </motion.button>
             </>
           )}
 
@@ -253,63 +313,74 @@ export const LatestProductsSection = () => {
             productsPerView === 2 ? 'grid-cols-2' :
               'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
             }`}>
-            {products.map((product) => (
-              <Card
+            {products.map((product, index) => (
+              <motion.div
                 key={product.id}
-                className="border-none shadow-none bg-transparent hover:scale-105 transition-transform duration-300 cursor-pointer"
-                onClick={() => router.push(`/products/${product.id}`)}
+                variants={productVariants}
+                initial="hidden"
+                animate="visible"
+                custom={index}
+                whileHover={{ y: -5 }}
+                transition={{ duration: 0.2 }}
               >
-                <CardContent className="p-0">
-                  <div className="flex flex-col">
-                    <div className="relative overflow-hidden rounded-lg mb-4 md:mb-5">
-                      <img
-                        className="w-full h-[250px] md:h-[300px] lg:h-[389px] object-cover transition-transform duration-300 hover:scale-110"
-                        alt={product.title}
-                        src={getProductImage(product)}
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "/product-oil.png";
-                        }}
-                      />
+                <Card
+                  className="border-none shadow-none bg-transparent hover:scale-105 transition-transform duration-300 cursor-pointer"
+                  onClick={() => router.push(`/products/${product.id}`)}
+                >
+                  <CardContent className="p-0">
+                    <div className="flex flex-col">
+                      <div className="relative overflow-hidden rounded-lg mb-4 md:mb-5">
+                        <motion.img
+                          className="w-full h-[250px] md:h-[300px] lg:h-[389px] object-cover transition-transform duration-300 hover:scale-110"
+                          alt={product.title}
+                          src={getProductImage(product)}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = "/product-oil.png";
+                          }}
+                          whileHover={{ scale: 1.05 }}
+                          transition={{ duration: 0.3 }}
+                        />
 
-                      <div className="absolute top-4 left-4 bg-[#b87f14] text-white px-3 py-1 rounded-full text-sm font-medium">
-                        {formatPrice(product.price)}
+                        <div className="absolute top-4 left-4 bg-[#b87f14] text-white px-3 py-1 rounded-full text-sm font-medium">
+                          {formatPrice(product.price)}
+                        </div>
                       </div>
+
+                      <h3 className="font-normal text-[#183b56] text-lg md:text-xl tracking-[0.20px] leading-9 truncate hover:text-[#b87f14] transition-colors">
+                        {product.title}
+                      </h3>
+
+                      <p className="font-normal text-[#5a7184] text-sm md:text-base tracking-[0] leading-9 truncate">
+                        {product.category}
+                      </p>
+
+                      {product.tags && product.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {product.tags.slice(0, 2).map((tag, index) => (
+                            <span
+                              key={index}
+                              className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          {product.tags.length > 2 && (
+                            <span className="text-gray-400 text-xs px-2 py-1">
+                              +{product.tags.length - 2}
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
-
-                    <h3 className="font-normal text-[#183b56] text-lg md:text-xl tracking-[0.20px] leading-9 truncate hover:text-[#b87f14] transition-colors">
-                      {product.title}
-                    </h3>
-
-                    <p className="font-normal text-[#5a7184] text-sm md:text-base tracking-[0] leading-9 truncate">
-                      {product.category}
-                    </p>
-
-                    {product.tags && product.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {product.tags.slice(0, 2).map((tag, index) => (
-                          <span
-                            key={index}
-                            className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                        {product.tags.length > 2 && (
-                          <span className="text-gray-400 text-xs px-2 py-1">
-                            +{product.tags.length - 2}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
       <div className="w-full border-border/45 border-b h-4 mt-8 md:mt-16"></div>
-    </section>
+    </motion.section>
   );
 };

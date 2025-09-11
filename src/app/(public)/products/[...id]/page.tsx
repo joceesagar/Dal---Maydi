@@ -4,6 +4,55 @@ import { Button } from "@/components/ui/button";
 import { Heart, ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const slideInLeft = {
+  hidden: { x: -100, opacity: 0 },
+  visible: {
+    x: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.8,
+      ease: "easeOut" as any
+    }
+  }
+};
+
+const fadeInUp = {
+  hidden: { y: 40, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.7,
+      ease: "easeOut" as any
+    }
+  }
+};
+
+const staggerItem = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut" as any
+    }
+  }
+};
 
 interface Product {
   id: string;
@@ -195,19 +244,33 @@ const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
   }
 
   return (
-    <div className="bg-[#f8f8f8] min-h-screen w-full">
+    <motion.div
+      className="bg-[#f8f8f8] min-h-screen w-full"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       <div className="max-w-[1440px] mx-auto bg-[#f8f8f8] px-4">
         {/* Success message */}
         {message && (
-          <div className="fixed top-4 right-4 z-50 p-3 bg-green-100 text-green-700 rounded-md text-sm shadow-lg">
+          <motion.div
+            className="fixed top-4 right-4 z-50 p-3 bg-green-100 text-green-700 rounded-md text-sm shadow-lg"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
             {message}
-          </div>
+          </motion.div>
         )}
 
         {/* Main Product Section */}
         <div className="flex flex-col lg:flex-row gap-8 pt-[120px] pb-16">
           {/* Product Image Section */}
-          <div className="w-full lg:w-[610px] h-auto lg:h-[599px] relative flex-shrink-0 lg:ml-[96px]">
+          <motion.div
+            className="w-full lg:w-[610px] h-auto lg:h-[599px] relative flex-shrink-0 lg:ml-[96px]"
+            variants={slideInLeft}
+          >
             <img
               className="w-full h-full rounded-[15.57px] object-cover"
               alt={product.title}
@@ -217,72 +280,123 @@ const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 target.src = "/rectangle-3.png";
               }}
             />
-          </div>
+          </motion.div>
 
           {/* Product Details Section */}
-          <div className="flex-1 pt-1">
+          <motion.div
+            className="flex-1 pt-1"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1
+                }
+              }
+            }}
+          >
             {/* Heart Icon */}
 
             {/* Product Title */}
-            <div className="flex items-center gap-5">
+            <motion.div
+              className="flex items-center gap-5"
+              variants={fadeInUp}
+            >
               <div>
                 <h1 className="[font-family:'Poppins',Helvetica] font-medium text-gray-900 text-3xl lg:text-5xl tracking-[0] leading-[normal]">
                   {product.title}
                 </h1>
               </div>
 
-              <div
+              <motion.div
                 className={`rounded-full flex items-center justify-center w-[50px] h-[50px] cursor-pointer ${isFavorite ? "bg-red-100" : "bg-[#D9D9D97D]"
                   }`}
                 onClick={() => setIsFavorite(!isFavorite)}
+                variants={fadeInUp}
+                transition={{ delay: 0.1 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 <Heart className={isFavorite ? "text-red-500 fill-red-500" : ""} />
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             {/* Product Description */}
-            <p className="[font-family:'Poppins',Helvetica] font-normal max-w-xl text-gray-500 text-base tracking-[0] leading-[normal] mb-[32px]">
+            <motion.p
+              className="[font-family:'Poppins',Helvetica] font-normal max-w-xl text-gray-500 text-base tracking-[0] leading-[normal] mb-[32px]"
+              variants={fadeInUp}
+              transition={{ delay: 0.2 }}
+            >
               {product.description}
-            </p>
+            </motion.p>
 
             {/* Feature Badges */}
-            <div className="flex flex-wrap items-center gap-[15px] mb-[12px]">
+            <motion.div
+              className="flex flex-wrap items-center gap-[15px] mb-[12px]"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.05
+                  }
+                }
+              }}
+            >
               {product.tags.map((tag, index) => (
-                <Badge
+                <motion.div
                   key={index}
-                  variant="secondary"
-                  className="flex w-auto h-12 items-center justify-center gap-[3.46px] px-3 py-1.5 bg-gray-100 rounded-lg [font-family:'Poppins',Helvetica] font-normal text-gray-700 text-xs text-center tracking-[0] leading-[normal]"
+                  variants={staggerItem}
+                  transition={{ delay: 0.3 + index * 0.05 }}
                 >
-                  {tag}
-                </Badge>
+                  <Badge
+                    variant="secondary"
+                    className="flex w-auto h-12 items-center justify-center gap-[3.46px] px-3 py-1.5 bg-gray-100 rounded-lg [font-family:'Poppins',Helvetica] font-normal text-gray-700 text-xs text-center tracking-[0] leading-[normal]"
+                  >
+                    {tag}
+                  </Badge>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
 
             {/* Volume Selection */}
-            <div className="mb-[34px] flex flex-col items-start">
+            <motion.div
+              className="mb-[34px] flex flex-col items-start"
+              variants={fadeInUp}
+              transition={{ delay: 0.4 }}
+            >
               <div className="[font-family:'Poppins',Helvetica] font-medium text-black text-base text-center tracking-[0] leading-[normal] mb-[12px]">
                 Volume
               </div>
 
               <div className="flex gap-5 flex-wrap">
                 {volumeOptions.map((volume, index) => (
-                  <Button
+                  <motion.div
                     key={index}
-                    variant={selectedVolume === index ? "outline" : "ghost"}
-                    className={`w-full sm:w-[239px] h-11 items-center justify-center gap-[3.46px] px-[12.11px] py-[3.46px] ${selectedVolume === index
-                      ? "bg-white rounded-[6.92px] border-[0.69px] border-solid border-gray-900"
-                      : "bg-[#f8f8f8] rounded-[6.92px] border-[0.69px] border-solid border-[#0000001c]"
-                      } [font-family:'Poppins',Helvetica] font-normal text-gray-900 text-base text-center tracking-[0] leading-[normal]`}
-                    onClick={() => setSelectedVolume(index)}
+                    variants={staggerItem}
+                    transition={{ delay: 0.45 + index * 0.1 }}
                   >
-                    {volume}
-                  </Button>
+                    <Button
+                      variant={selectedVolume === index ? "outline" : "ghost"}
+                      className={`w-full sm:w-[239px] h-11 items-center justify-center gap-[3.46px] px-[12.11px] py-[3.46px] ${selectedVolume === index
+                        ? "bg-white rounded-[6.92px] border-[0.69px] border-solid border-gray-900"
+                        : "bg-[#f8f8f8] rounded-[6.92px] border-[0.69px] border-solid border-[#0000001c]"
+                        } [font-family:'Poppins',Helvetica] font-normal text-gray-900 text-base text-center tracking-[0] leading-[normal]`}
+                      onClick={() => setSelectedVolume(index)}
+                    >
+                      {volume}
+                    </Button>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
 
             {/* Bundle Selection */}
-            <div className="mb-[34px] flex flex-col items-start">
+            <motion.div
+              className="mb-[34px] flex flex-col items-start"
+              variants={fadeInUp}
+              transition={{ delay: 0.5 }}
+            >
               <div className="[font-family:'Poppins',Helvetica] font-medium text-black text-base text-center tracking-[0] leading-[normal] mb-[12px]">
                 Bundle &amp; Save
               </div>
@@ -294,55 +408,64 @@ const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   const originalPrice = calculateOriginalPrice(index);
 
                   return (
-                    <div
+                    <motion.div
                       key={index}
-                      onClick={() => setSelectedBundle(index)}
-                      className={`
-                    flex-1 min-w-[160px] border border-gray-200 h-[89px] p-3 rounded-xl cursor-pointer transition-all duration-200 flex flex-col justify-between
-                    ${isSelected
-                          ? "bg-gray-900 text-white"
-                          : "bg-gray-50 text-gray-900 hover:bg-gray-100"
-                        }
-                  `}
+                      variants={staggerItem}
+                      transition={{ delay: 0.55 + index * 0.1 }}
                     >
-                      <div className="flex justify-end">
-                        <div className="text-right">
+                      <div
+                        onClick={() => setSelectedBundle(index)}
+                        className={`
+                          flex-1 min-w-[160px] border border-gray-200 h-[89px] p-3 rounded-xl cursor-pointer transition-all duration-200 flex flex-col justify-between
+                          ${isSelected
+                            ? "bg-gray-900 text-white"
+                            : "bg-gray-50 text-gray-900 hover:bg-gray-100"
+                          }
+                        `}
+                      >
+                        <div className="flex justify-end">
+                          <div className="text-right">
+                            <div
+                              className={`font-semibold text-sm ${isSelected ? "text-white" : "text-gray-900"
+                                }`}
+                            >
+                              {formatPrice(bundlePrice)}
+                            </div>
+                            {originalPrice && (
+                              <div className="text-xs text-gray-400 line-through">
+                                {formatPrice(originalPrice)}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="space-y-0.5">
                           <div
-                            className={`font-semibold text-sm ${isSelected ? "text-white" : "text-gray-900"
+                            className={`font-medium text-xs ${isSelected ? "text-white" : "text-gray-900"
                               }`}
                           >
-                            {formatPrice(bundlePrice)}
+                            {bundle}
                           </div>
-                          {originalPrice && (
-                            <div className="text-xs text-gray-400 line-through">
-                              {formatPrice(originalPrice)}
-                            </div>
-                          )}
+                          <div
+                            className={`text-xs font-light ${isSelected ? "text-gray-300" : "text-gray-500"
+                              }`}
+                          >
+                            {getBundleSubtitle(index)}
+                          </div>
                         </div>
                       </div>
-
-                      <div className="space-y-0.5">
-                        <div
-                          className={`font-medium text-xs ${isSelected ? "text-white" : "text-gray-900"
-                            }`}
-                        >
-                          {bundle}
-                        </div>
-                        <div
-                          className={`text-xs font-light ${isSelected ? "text-gray-300" : "text-gray-500"
-                            }`}
-                        >
-                          {getBundleSubtitle(index)}
-                        </div>
-                      </div>
-                    </div>
+                    </motion.div>
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
 
             {/* Action Buttons */}
-            <div className="space-y-4 flex flex-col justify-end max-w-lg">
+            <motion.div
+              className="space-y-4 flex flex-col justify-end max-w-lg"
+              variants={fadeInUp}
+              transition={{ delay: 0.7 }}
+            >
               <div className="flex gap-2 flex-wrap">
                 <Button
                   variant="outline"
@@ -359,7 +482,11 @@ const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   Buy Now
                 </Button>
               </div>
-              <div className="flex items-center justify-end gap-[3px] pe-4">
+              <motion.div
+                className="flex items-center justify-end gap-[3px] pe-4"
+                variants={fadeInUp}
+                transition={{ delay: 0.8 }}
+              >
                 <img
                   className="w-[18px] h-[18px]"
                   alt="Frame"
@@ -368,18 +495,33 @@ const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
                 <div className="[font-family:'Poppins',Helvetica] font-normal text-gray-700 text-xs tracking-[0] leading-[normal]">
                   Cancel Anytime
                 </div>
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
 
         {/* Product Gallery Section */}
-        <section className="max-w-5xl mx-auto pb-16">
+        <motion.section
+          className="max-w-5xl mx-auto pb-16"
+          variants={{
+            hidden: { opacity: 0 },
+            visible: {
+              opacity: 1,
+              transition: {
+                staggerChildren: 0.15
+              }
+            }
+          }}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Left Column */}
             <div className="grid grid-rows-2 gap-4 h-[700px]">
               {/* Wide image - top left (full width of left column) */}
-              <div className="bg-pink-50 overflow-hidden shadow-sm rounded-lg">
+              <motion.div
+                className="bg-pink-50 overflow-hidden shadow-sm rounded-lg"
+                variants={fadeInUp}
+                transition={{ delay: 0.9 }}
+              >
                 <img
                   src={product.images[0] || "/product-detail.png"}
                   alt={product.title}
@@ -389,12 +531,16 @@ const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
                     target.src = "/product-detail.png";
                   }}
                 />
-              </div>
+              </motion.div>
 
               {/* Bottom row - two half-width images */}
               <div className="grid grid-cols-2 gap-4">
                 {/* Bottom left image */}
-                <div className="bg-pink-50 overflow-hidden shadow-sm rounded-lg">
+                <motion.div
+                  className="bg-pink-50 overflow-hidden shadow-sm rounded-lg"
+                  variants={fadeInUp}
+                  transition={{ delay: 1.0 }}
+                >
                   <img
                     src={product.images[1] || "/product-detail.png"}
                     alt={product.title}
@@ -404,10 +550,14 @@ const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       target.src = "/product-detail.png";
                     }}
                   />
-                </div>
+                </motion.div>
 
                 {/* Bottom center image */}
-                <div className="bg-pink-50 overflow-hidden shadow-sm rounded-lg">
+                <motion.div
+                  className="bg-pink-50 overflow-hidden shadow-sm rounded-lg"
+                  variants={fadeInUp}
+                  transition={{ delay: 1.1 }}
+                >
                   <img
                     src={product.images[2] || "/product-detail.png"}
                     alt={product.title}
@@ -417,12 +567,16 @@ const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
                       target.src = "/product-detail.png";
                     }}
                   />
-                </div>
+                </motion.div>
               </div>
             </div>
 
             {/* Right Column - single tall image */}
-            <div className="bg-pink-50 overflow-hidden shadow-sm h-[700px] rounded-lg">
+            <motion.div
+              className="bg-pink-50 overflow-hidden shadow-sm h-[700px] rounded-lg"
+              variants={fadeInUp}
+              transition={{ delay: 1.2 }}
+            >
               <img
                 src={product.images[3] || "/product-detail.png"}
                 alt={product.title}
@@ -432,11 +586,11 @@ const ProductPage = ({ params }: { params: Promise<{ id: string }> }) => {
                   target.src = "/product-detail.png";
                 }}
               />
-            </div>
+            </motion.div>
           </div>
-        </section>
+        </motion.section>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

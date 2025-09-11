@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +19,41 @@ interface FormErrors {
   email?: string;
   message?: string;
 }
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.3
+    }
+  }
+};
+
+const fadeInUp = {
+  hidden: { y: 30, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut" as any
+    }
+  }
+};
+
+const fadeIn = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut" as any
+    }
+  }
+};
 
 export const MessageInputSection = () => {
   const [formData, setFormData] = useState<FormData>({
@@ -133,11 +169,30 @@ export const MessageInputSection = () => {
   ];
 
   return (
-    <section className="flex flex-col w-full items-start gap-[41.62px] relative px-32 pt-16 mb-32">
-      <form onSubmit={handleSubmit} className="w-full flex flex-col gap-[41.62px]">
-        <div className="flex items-start gap-[27.75px] relative w-full">
+    <motion.section
+      className="flex flex-col w-full items-start gap-[41.62px] relative px-32 pt-16 mb-32"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={containerVariants}
+      transition={{ delay: 0.5 }} // Added delay for this section
+    >
+      <motion.form
+        onSubmit={handleSubmit}
+        className="w-full flex flex-col gap-[41.62px]"
+        variants={containerVariants}
+      >
+        <motion.div
+          className="flex items-start gap-[27.75px] relative w-full"
+          variants={containerVariants}
+        >
           {inputFields.map((field, index) => (
-            <div key={index} className="flex-1 flex flex-col">
+            <motion.div
+              key={index}
+              className="flex-1 flex flex-col"
+              variants={fadeInUp}
+              transition={{ delay: 0.1 * index }}
+            >
               <Input
                 placeholder={field.placeholder}
                 value={formData[field.field]}
@@ -146,15 +201,24 @@ export const MessageInputSection = () => {
                 required={field.required}
               />
               {field.error && (
-                <span className="text-red-500 text-sm mt-1 px-[8.67px] [font-family:'Poppins',Helvetica]">
+                <motion.span
+                  className="text-red-500 text-sm mt-1 px-[8.67px] [font-family:'Poppins',Helvetica]"
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
                   {field.error}
-                </span>
+                </motion.span>
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="w-full flex flex-col">
+        <motion.div
+          className="w-full flex flex-col"
+          variants={fadeInUp}
+          transition={{ delay: 0.4 }}
+        >
           <Textarea
             placeholder="Message"
             value={formData.message}
@@ -163,35 +227,57 @@ export const MessageInputSection = () => {
             required
           />
           {errors.message && (
-            <span className="text-red-500 text-sm mt-1 px-[8.67px] [font-family:'Poppins',Helvetica]">
+            <motion.span
+              className="text-red-500 text-sm mt-1 px-[8.67px] [font-family:'Poppins',Helvetica]"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
               {errors.message}
-            </span>
+            </motion.span>
           )}
-        </div>
+        </motion.div>
 
         {submitStatus === 'success' && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+          <motion.div
+            className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
             Thank you! Your message has been sent successfully.
-          </div>
+          </motion.div>
         )}
 
         {submitStatus === 'error' && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <motion.div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
             Sorry, there was an error sending your message. Please try again.
-          </div>
+          </motion.div>
         )}
 
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="flex w-[310.44px] items-center justify-center gap-[4.34px] px-[21.68px] py-[21.68px] bg-[#bb8116] hover:bg-[#a06f13] disabled:opacity-50 disabled:cursor-not-allowed rounded-[32.08px] h-auto"
-        >
-          <span className="[font-family:'Inter',Helvetica] font-normal text-white text-[19.1px] text-center">
-            {isLoading ? 'Sending...' : 'Leave us a Message'}
-          </span>
-          {!isLoading && <ArrowRightIcon className="w-[20.81px] h-[20.81px]" />}
-        </Button>
-      </form>
-    </section>
+        <motion.div variants={fadeInUp} transition={{ delay: 0.5 }}>
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="flex w-[310.44px] items-center justify-center gap-[4.34px] px-[21.68px] py-[21.68px] bg-[#bb8116] hover:bg-[#a06f13] disabled:opacity-50 disabled:cursor-not-allowed rounded-[32.08px] h-auto"
+            >
+              <span className="[font-family:'Inter',Helvetica] font-normal text-white text-[19.1px] text-center">
+                {isLoading ? 'Sending...' : 'Leave us a Message'}
+              </span>
+              {!isLoading && <ArrowRightIcon className="w-[20.81px] h-[20.81px]" />}
+            </Button>
+          </motion.div>
+        </motion.div>
+      </motion.form>
+    </motion.section>
   );
 };

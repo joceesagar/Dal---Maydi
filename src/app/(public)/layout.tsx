@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "../globals.css";
 
-import { Navigation } from "@/components/navigation";
+
 import { SiteFooterSection } from "./landing-page/sections/site-footer";
-import { CartLink } from "./products/sections/cart-items";
+import { Header } from "../Header";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -27,31 +27,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.variable} font-poppins antialiased`}>
         <div className="w-full min-h-screen overflow-x-hidden">
-          {/* Header Section */}
-          <header className="w-full bg-[#feffef] border-b border-border py-4 md:py-6">
-            <div className="mx-auto px-4 sm:px-6 lg:px-8 xl:px-32">
-              <div className="flex justify-between items-center">
-                {/* Logo */}
-                <div className="flex-shrink-0">
-                  <div className="font-semibold text-[#bc8217] text-lg sm:text-xl md:text-[25.2px]">
-                    Dal - Maydi
-                  </div>
-                </div>
+          {/* Header */}
+          <Header />
 
-                {/* Navigation */}
-                <div className="hidden md:block">
-                  <Navigation />
-                </div>
-
-                {/* Cart Button */}
-                <CartLink />
-              </div>
-            </div>
-          </header>
-
-          <main className="overflow-x-hidden">
-            {children}
-          </main>
+          <main className="overflow-x-hidden">{children}</main>
         </div>
         <SiteFooterSection />
       </body>

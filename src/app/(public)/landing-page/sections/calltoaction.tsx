@@ -1,6 +1,49 @@
 "use client";
+import { motion, AnimatePresence } from "framer-motion";
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut" as any
+    }
+  }
+};
+
+const accordionVariants = {
+  closed: {
+    height: 0,
+    opacity: 0,
+    transition: {
+      duration: 0.3,
+      ease: "easeInOut" as any
+    }
+  },
+  open: {
+    height: "auto",
+    opacity: 1,
+    transition: {
+      duration: 0.4,
+      ease: "easeOut" as any
+    }
+  }
+};
 
 export const FAQSection = () => {
   const [openItem, setOpenItem] = useState<string | null>("item-1");
@@ -37,57 +80,85 @@ export const FAQSection = () => {
   };
 
   return (
-    <section className="w-full px-4 sm:px-6 md:px-8 py-12 md:py-16 bg-white">
+    <motion.section
+      className="w-full px-4 sm:px-6 md:px-8 py-12 md:py-16 bg-white"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.2 }}
+      variants={containerVariants}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="grid lg:grid-cols-5 gap-8 md:gap-12 items-start">
           {/* Header Section */}
-          <div className="lg:col-span-2 text-center lg:text-left">
+          <motion.div
+            className="lg:col-span-2 text-center lg:text-left"
+            variants={itemVariants}
+          >
             <h2 className="font-semibold text-black text-3xl md:text-4xl lg:text-5xl leading-tight mb-4 md:mb-6 font-['Poppins']">
               FAQs
             </h2>
             <p className="font-normal text-[#183b56] text-lg md:text-xl lg:text-2xl leading-relaxed font-['Poppins']">
               Everything You Need to Know About Our Essential Oils
             </p>
-          </div>
+          </motion.div>
 
-          <div className="lg:col-span-3 w-full">
+          <motion.div
+            className="lg:col-span-3 w-full"
+            variants={itemVariants}
+          >
             <div className="space-y-4">
               {faqData.map((faq) => (
-                <div
+                <motion.div
                   key={faq.id}
                   className="border-2 border-gray-200 rounded-xl overflow-hidden transition-all duration-200 hover:border-gray-300"
+                  whileHover={{ y: -2 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <button
+                  <motion.button
                     onClick={() => toggleItem(faq.id)}
                     className="w-full px-4 md:px-8 py-4 md:py-6 text-left flex items-center justify-between bg-white hover:bg-gray-50 transition-colors duration-200"
+                    whileTap={{ scale: 0.98 }}
                   >
                     <span className="font-normal text-black text-base md:text-lg lg:text-xl leading-normal font-['Poppins'] pr-4">
                       {faq.question}
                     </span>
-                    <ChevronDown
-                      className={`w-5 h-5 md:w-6 md:h-6 text-gray-600 flex-shrink-0 transition-transform duration-200 ${openItem === faq.id ? "rotate-180" : ""
-                        }`}
-                    />
-                  </button>
+                    <motion.div
+                      animate={{ rotate: openItem === faq.id ? 180 : 0 }}
+                      transition={{ duration: 0.3, ease: "easeInOut" }}
+                    >
+                      <ChevronDown
+                        className="w-5 h-5 md:w-6 md:h-6 text-gray-600 flex-shrink-0"
+                      />
+                    </motion.div>
+                  </motion.button>
 
-                  <div
-                    className={`overflow-hidden transition-all duration-300 ${openItem === faq.id
-                        ? "max-h-96 opacity-100"
-                        : "max-h-0 opacity-0"
-                      }`}
-                  >
-                    <div className="px-4 md:px-8 pb-4 md:pb-6 pt-2 bg-gray-50">
-                      <p className="font-light text-[#606060] text-sm md:text-base leading-relaxed">
-                        {faq.answer}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                  <AnimatePresence>
+                    {openItem === faq.id && (
+                      <motion.div
+                        initial="closed"
+                        animate="open"
+                        exit="closed"
+                        variants={accordionVariants}
+                      >
+                        <div className="px-4 md:px-8 pb-4 md:pb-6 pt-2 bg-gray-50">
+                          <motion.p
+                            className="font-light text-[#606060] text-sm md:text-base leading-relaxed"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2, duration: 0.3 }}
+                          >
+                            {faq.answer}
+                          </motion.p>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
-    </section>
+    </motion.section>
   );
 };

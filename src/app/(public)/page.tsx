@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import HeroSection from "./landing-page/sections/hero-section";
 import { EssentialOilFactsSection } from "./landing-page/sections/essential-oil-facts";
