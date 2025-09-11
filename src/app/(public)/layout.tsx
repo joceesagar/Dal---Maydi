@@ -3,8 +3,6 @@ import { Poppins } from "next/font/google";
 import "../globals.css";
 
 import { Navigation } from "@/components/navigation";
-import { Button } from "@/components/ui/button";
-import { ShoppingCartIcon } from "lucide-react";
 import { SiteFooterSection } from "./landing-page/sections/site-footer";
 import { CartLink } from "./products/sections/cart-items";
 
@@ -51,7 +49,9 @@ export default function RootLayout({
             </div>
           </header>
 
-          <main className="overflow-x-hidden">{children}</main>
+          <main className="overflow-x-hidden">
+            {children}
+          </main>
         </div>
         <SiteFooterSection />
       </body>

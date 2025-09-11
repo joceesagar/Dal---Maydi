@@ -1,58 +1,117 @@
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
-
 import { z } from "zod";
 
 const createProductSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().optional(),
-  tags: z.array(z.string()).optional(),
-  images: z.array(z.string()).optional(),
-  category: z.string().optional(),
+  title: z.string().min(1, "Title is required"),
+  description: z.string(),
+  price: z.number().positive("Price must be positive"),
+  tags: z.array(z.string()),
+  images: z.array(z.string()),
+  category: z.string(),
   volumes: z.array(z.string()).optional(),
   bundles: z.array(z.string()).optional(),
 });
 
-// GET /api/products
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-
-  const page = Number(searchParams.get("page") ?? 1);
-  const limit = Math.min(Number(searchParams.get("limit") ?? 12), 100);
-  const skip = (page - 1) * limit;
-
-  try {
-    const [items, total] = await Promise.all([
-      prisma.product.findMany({
-        orderBy: { createdAt: "desc" },
-        skip,
-        take: limit,
-      }),
-      prisma.product.count(),
-    ]);
-
-    return NextResponse.json({ items, total, page, limit });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
-}
-
-// POST /api/products
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+
+    if (body.price && typeof body.price === "string") {
+      body.price = parseFloat(body.price);
+    }
+
     const parsed = createProductSchema.parse(body);
 
-    const created = await prisma.product.create({
-      data: parsed as any,
+    const productData: any = {
+      title: parsed.title,
+      description: parsed.description,
+      price: parsed.price,
+      tags: parsed.tags,
+      images: parsed.images,
+      category: parsed.category,
+    };
+
+    if (parsed.volumes !== undefined) {
+      productData.volumes = parsed.volumes;
+    }
+    if (parsed.bundles !== undefined) {
+      productData.bundles = parsed.bundles;
+    }
+
+    const newProduct = await prisma.product.create({
+      data: productData,
     });
 
-    return NextResponse.json(created, { status: 201 });
+    return NextResponse.json(newProduct, { status: 201 });
   } catch (err: any) {
+    console.error("POST /api/products error:", err);
+
+    if (err.name === 'ZodError') {
+      return NextResponse.json(
+        { error: "Validation error", details: err.errors },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: err.message ?? "Bad Request" },
-      { status: 400 }
+      { error: err.message ?? "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
+
+
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const page = Math.max(1, parseInt(searchParams.get("page") || "1"));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "10")));
+    const category = searchParams.get("category");
+    const search = searchParams.get("search");
+    const skip = (page - 1) * limit;
+
+    const where: any = {};
+
+    if (category && category.trim()) {
+      where.category = category;
+    }
+
+    if (search && search.trim()) {
+      where.OR = [
+        { title: { contains: search, mode: "insensitive" } },
+        { description: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    const [products, total] = await Promise.all([
+      prisma.product.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.product.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      products,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        hasNext: page < Math.ceil(total / limit),
+        hasPrev: page > 1,
+      },
+    });
+  } catch (err) {
+    console.error("GET /api/products error:", err);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
     );
   }
 }

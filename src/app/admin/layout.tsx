@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import "../globals.css";
 import LogoutButton from "./components/logout-button";
 import { usePathname } from "next/navigation";
+import { Toaster } from "react-hot-toast";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -92,7 +93,7 @@ export default function AdminLayout({
               {/* Header */}
 
               <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-                <div className="mx-auto max-w-7xl">{children}</div>
+                <div className="mx-auto max-w-7xl"><Toaster position="top-right" />{children}</div>
               </main>
             </div>
           </div>

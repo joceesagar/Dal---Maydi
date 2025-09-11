@@ -13,7 +13,7 @@ interface Product {
     image: string;
 }
 
-export const CartSection = () => {
+const CartSection = () => {
     const [cart, setCart] = useState<Product[]>([]);
 
     useEffect(() => {
@@ -57,3 +57,5 @@ export const CartSection = () => {
         </div>
     );
 };
+
+export default CartSection

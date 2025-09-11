@@ -11,15 +11,14 @@ model Product {
   id          String   @id @default(cuid())
   title       String
   description String
-  tags        String[] // e.g., ["100% Pure & Natural", "Stress Relaxation", "Promotes Better Sleep"]
-  images      String[] // Array of image URLs
+  price       Float?
+  tags        String[]
+  images      String[]
   category    String
-  price       Float
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
-  volumes String[]
-  bundles String[]
+  volumes     String[]
+  bundles     String[]
 
   @@map("products")
 }
