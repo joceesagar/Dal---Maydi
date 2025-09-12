@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Product {
   id: string;
@@ -43,63 +44,42 @@ interface GridProps {
     }>
   >;
   products: Product[];
+  loading: boolean;
 }
 
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3
-    }
-  }
+    transition: { staggerChildren: 0.1, delayChildren: 0.3 },
+  },
 };
 
 const fadeInUp = {
   hidden: { y: 30, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.6,
-      ease: "easeOut" as any
-    }
-  }
+  visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" as any } },
 };
 
 const staggerItem = {
   hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut" as any
-    }
-  }
+  visible: { y: 0, opacity: 1, transition: { duration: 0.5, ease: "easeOut" as any } },
 };
 
-export const ProductGridSection = ({ filters, setFilters, products }: GridProps) => {
+export const ProductGridSection = ({ filters, setFilters, products, loading }: GridProps) => {
   const [message, setMessage] = React.useState<string | null>(null);
   const router = useRouter();
-
   const itemsPerPage = 6;
 
   const filteredProducts = useMemo(() => {
     let data = [...products];
-
-    if (filters.category !== "all") {
-      data = data.filter((p) => p.category === filters.category);
-    }
-
+    if (filters.category !== "all") data = data.filter((p) => p.category === filters.category);
     data = data.filter((p) => p.price >= filters.priceRange[0] && p.price <= filters.priceRange[1]);
-
     if (filters.sort === "price-asc") data.sort((a, b) => a.price - b.price);
     else if (filters.sort === "price-desc") data.sort((a, b) => b.price - a.price);
-    else if (filters.sort === "date-asc") data.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-    else if (filters.sort === "date-desc") data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
+    else if (filters.sort === "date-asc")
+      data.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    else if (filters.sort === "date-desc")
+      data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return data;
   }, [filters, products]);
 
@@ -109,32 +89,18 @@ export const ProductGridSection = ({ filters, setFilters, products }: GridProps)
     filters.page * itemsPerPage
   );
 
-  const getProductImage = (product: Product) => {
-    if (product.images && product.images.length > 0) {
-      return product.images[0];
-    }
-    return "/product-oil.png";
-  };
+  const getProductImage = (product: Product) =>
+    product.images && product.images.length > 0 ? product.images[0] : "/product-oil.png";
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(price);
-  };
+  const formatPrice = (price: number) =>
+    new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(price);
 
   const handleAddToCart = (product: Product) => {
     const existing = JSON.parse(localStorage.getItem("cart") || "[]");
     const existingIndex = existing.findIndex((item: Product) => item.id === product.id);
-
-    if (existingIndex >= 0) {
-      existing[existingIndex] = product;
-    } else {
-      existing.push(product);
-    }
-
+    if (existingIndex >= 0) existing[existingIndex] = product;
+    else existing.push(product);
     localStorage.setItem("cart", JSON.stringify(existing));
-
     setMessage(`${product.title} added to cart`);
     setTimeout(() => setMessage(null), 2000);
   };
@@ -151,7 +117,9 @@ export const ProductGridSection = ({ filters, setFilters, products }: GridProps)
         variants={fadeInUp}
       >
         <h2 className="font-medium text-lg text-gray-800">
-          {filteredProducts.length} {filteredProducts.length === 1 ? 'Product' : 'Products'}
+          {loading
+            ? "Loading..."
+            : `${filteredProducts.length} ${filteredProducts.length === 1 ? "Product" : "Products"}`}
         </h2>
 
         <Select
@@ -183,8 +151,21 @@ export const ProductGridSection = ({ filters, setFilters, products }: GridProps)
         </motion.div>
       )}
 
-      {/* Product Cards */}
-      {paginatedProducts.length > 0 ? (
+      {/* Skeletons */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <Card
+              key={i}
+              className="w-full h-full bg-transparent border-none shadow-none"
+            >
+              <CardContent className="p-0 w-full h-full">
+                <Skeleton className="w-[320px] h-[420px] rounded-lg" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : paginatedProducts.length > 0 ? (
         <>
           <motion.div
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
@@ -252,7 +233,9 @@ export const ProductGridSection = ({ filters, setFilters, products }: GridProps)
                   key={i}
                   variant="ghost"
                   onClick={() => setFilters((prev) => ({ ...prev, page: i + 1 }))}
-                  className={`w-[34px] h-[34px] p-0 rounded-none ${filters.page === i + 1 ? "bg-black text-white" : "bg-transparent text-black"
+                  className={`w-[34px] h-[34px] p-0 rounded-none ${filters.page === i + 1
+                    ? "bg-black text-white"
+                    : "bg-transparent text-black"
                     }`}
                 >
                   {i + 1}

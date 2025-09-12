@@ -10,6 +10,7 @@ import "../globals.css";
 import LogoutButton from "./components/logout-button";
 import { usePathname } from "next/navigation";
 import { Toaster } from "react-hot-toast";
+
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
@@ -17,26 +18,10 @@ const poppins = Poppins({
 });
 
 const navItems = [
-  {
-    href: "/admin",
-    label: "Dashboard",
-    icon: Home,
-  },
-  {
-    href: "/admin/products",
-    label: "Products",
-    icon: Package2,
-  },
-  {
-    href: "/admin/messages",
-    label: "Messages",
-    icon: MessageSquare,
-  },
-  {
-    href: "/admin/reviews",
-    label: "User Reviews",
-    icon: Star,
-  },
+  { href: "/admin", label: "Dashboard", icon: Home },
+  { href: "/admin/products", label: "Products", icon: Package2 },
+  { href: "/admin/messages", label: "Messages", icon: MessageSquare },
+  { href: "/admin/reviews", label: "User Reviews", icon: Star },
 ];
 
 export default function AdminLayout({
@@ -45,11 +30,29 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isLoginPage = pathname === "/admin/login";
+
+  if (isLoginPage) {
+    // ✅ Only show children on /admin/login (no header or sidebar)
+    return (
+      <html lang="en">
+        <body className={`${poppins.variable} font-poppins antialiased`}>
+          <main className="flex min-h-screen items-center justify-center">
+            <Toaster position="top-right" />
+            {children}
+          </main>
+        </body>
+      </html>
+    );
+  }
 
   return (
     <html lang="en">
       <body>
         <div className={`${poppins.variable} font-poppins antialiased`}>
+          {/* Header */}
           <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 lg:px-6">
             <div className="flex items-center gap-4">
               {/* Mobile menu button */}
@@ -75,6 +78,7 @@ export default function AdminLayout({
               <LogoutButton />
             </div>
           </header>
+
           <div className="flex h-screen bg-gray-50">
             {/* Desktop Sidebar */}
             <div className="hidden lg:flex lg:w-60 lg:flex-col border border-r">
@@ -90,10 +94,11 @@ export default function AdminLayout({
 
             {/* Main Content */}
             <div className="flex-1 flex flex-col min-w-0">
-              {/* Header */}
-
               <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-                <div className="mx-auto max-w-7xl"><Toaster position="top-right" />{children}</div>
+                <div className="mx-auto max-w-7xl">
+                  <Toaster position="top-right" />
+                  {children}
+                </div>
               </main>
             </div>
           </div>
@@ -105,7 +110,6 @@ export default function AdminLayout({
 
 const Sidebar = ({ className = "" }) => {
   const pathname = usePathname();
-  console.log(pathname);
   return (
     <div
       className={cn("flex flex-col h-full bg-gray-50 text-black", className)}
@@ -138,18 +142,16 @@ const Sidebar = ({ className = "" }) => {
                 )}
               />
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <span
-                    className={cn(
-                      "font-medium truncate",
-                      isActive
-                        ? "text-white"
-                        : "text-gray-600 group-hover:text-white"
-                    )}
-                  >
-                    {item.label}
-                  </span>
-                </div>
+                <span
+                  className={cn(
+                    "font-medium truncate",
+                    isActive
+                      ? "text-white"
+                      : "text-gray-600 group-hover:text-white"
+                  )}
+                >
+                  {item.label}
+                </span>
               </div>
             </a>
           );

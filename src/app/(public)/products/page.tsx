@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { ProductFiltersSection } from "./sections/product-filter";
 import { ProductGridSection } from "./sections/product-grid";
-import { Loader2 } from "lucide-react";
 
 interface Product {
   id: string;
@@ -25,9 +24,9 @@ const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.15,
-      delayChildren: 0.2
-    }
-  }
+      delayChildren: 0.2,
+    },
+  },
 };
 
 const fadeInUp = {
@@ -37,9 +36,9 @@ const fadeInUp = {
     opacity: 1,
     transition: {
       duration: 0.7,
-      ease: "easeOut" as any
-    }
-  }
+      ease: "easeOut" as any,
+    },
+  },
 };
 
 const imageSlideUp = {
@@ -49,9 +48,9 @@ const imageSlideUp = {
     opacity: 1,
     transition: {
       duration: 1.2,
-      ease: "easeOut" as any
-    }
-  }
+      ease: "easeOut" as any,
+    },
+  },
 };
 
 const ProductsPage = () => {
@@ -64,30 +63,21 @@ const ProductsPage = () => {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        setError(null);
-
-        const response = await fetch('/api/products');
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
+        const response = await fetch("/api/products");
         const data = await response.json();
 
         if (data.products && Array.isArray(data.products)) {
           setProducts(data.products);
         } else {
-          throw new Error('Invalid response format');
+          setProducts([]);
         }
       } catch (err) {
-        console.error('Failed to fetch products:', err);
-        setError('Failed to load products. Please try again later.');
+        console.error("Failed to fetch products:", err);
         setProducts([]);
       } finally {
         setLoading(false);
@@ -96,34 +86,6 @@ const ProductsPage = () => {
 
     fetchProducts();
   }, []);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 animate-spin text-[#b87f14]" />
-          <p className="text-[#183b56]">Loading products...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="text-center">
-          <h3 className="text-xl font-medium text-[#183b56] mb-2">Error Loading Products</h3>
-          <p className="text-[#5a7184]">{error}</p>
-          <button
-            className="mt-4 bg-[#b87f14] hover:bg-[#a06f12] text-white px-4 py-2 rounded"
-            onClick={() => window.location.reload()}
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <motion.div
@@ -159,12 +121,13 @@ const ProductsPage = () => {
           <ProductFiltersSection filters={filters} setFilters={setFilters} />
         </motion.div>
 
-        {/* Product Grid */}
+        {/* Product Grid (with skeletons when loading) */}
         <motion.div variants={fadeInUp} transition={{ delay: 0.6 }}>
           <ProductGridSection
             filters={filters}
             setFilters={setFilters}
             products={products}
+            loading={loading}
           />
         </motion.div>
       </motion.div>
